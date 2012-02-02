@@ -1,7 +1,7 @@
 classdef WORLD
     properties
         initSize = 9;           %   initial ammount of the islands
-        
+        format = 'double';      %   the format of the genetic data matrix
         initPopsize = 10;        %   initial population size on the islands can be a vector
         space;          %   target area where the values are searched
         fitfunc;            %   simply the name of the function for oprimalisation
@@ -69,6 +69,8 @@ classdef WORLD
                             obj.fitfunc = varargin{c+1};
                         case 'type'
                             obj.type = varargin{c+1};
+                        case 'format'
+                            obj.format = varargin{c+1};        
                     end
                     catch
                         % ugly but foolproof :D
@@ -81,7 +83,7 @@ classdef WORLD
             obj = varargin{1};
              obj.islands = ISLAND %(obj.space,'fitfunc',obj.fitfunc,'population',obj.initPopsize);
             for c = 1:obj.initSize
-                obj.islands(c) = ISLAND('space','direct',obj.space,'fitfunc',obj.fitfunc,'popsize',obj.initPopsize,'type',obj.type);
+                obj.islands(c) = ISLAND('space','direct',obj.space,'fitfunc',obj.fitfunc,'popsize',obj.initPopsize,'type',obj.type,'format',obj.format);
         %                 obj.islands(c) = obj.islands(c).set(obj.spaceCODE,'fitfunc',obj.fitfunc,'population',obj.initPopsize);
                 obj.islands(c) = obj.islands(c).seed();
             end

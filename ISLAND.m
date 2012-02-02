@@ -3,6 +3,8 @@ classdef ISLAND
         genes;          %   genetic data of the population on the island
         fitnes;         %   fitnes values of the population
         
+        format = 'double'; %   the format of the genetic data matrix
+        
         %PSO data
         velocity;
         social = struct('momentum',[],'indiv',[],'swarm',[]);  %  the three social constants what determines the working of the algorithm.
@@ -111,6 +113,8 @@ classdef ISLAND
                              otherwise
                                  error(['Algorithm type ' varargin{c+1} ' is not specified'])
                          end
+                     case 'format'
+                         obj.format = varargin{c+1};                 
                          
                  end
                  catch
@@ -164,6 +168,7 @@ classdef ISLAND
 
             end
             obj.genes = rand(obj.popsize,size(obj.space,2)).* abs(repmat(obj.space(2,:),obj.popsize,1)-repmat(obj.space(1,:),obj.popsize,1)) - repmat(obj.space(2,:),obj.popsize,1);
+            obj.genes = eval([obj.format '(obj.genes);']);
             obj.fitnes = ones(1,obj.popsize)*inf;
             switch obj.type
                 case 'GA'
