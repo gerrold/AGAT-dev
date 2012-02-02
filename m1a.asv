@@ -1,0 +1,38 @@
+% first measurement experimental comparison
+clc; clear; close all
+
+
+% indivOnIsland = 100;
+panmixi = 100;      % how much generations runs on an island during one cycle
+migcycle = 10;      % the number of migration cycles
+worldsize = 1000;   % the total number of individuals on the world
+islandNum = 10;
+
+%---------------calculating agregated data and seeding
+world = WORLD;
+world = world.set('space',{'homo',-500,500,10},'initPopSize',ceil(worldsize/islandNum),'initSize',25,'structure',world.cmg('grid',5,5),'fitfunc','schwef');
+world = world.genesis();
+
+% ostrov = ISLAND('space','homo',-500,500,10,'fitfunc','schwef','population',30);
+% ostrov = ostrov.seed();
+
+for p=1:size(world.islands,2)
+% ostrov = ISLAND();
+% ostrov = ostrov.seed('space','homo',-500,500,30,'fitfunc','schwef','size',1000);
+    ostrov = world.islands(p);
+    for i=1:panmixi
+        ostrov = ostrov.update();                       % aktualizuje statisticke udaje pre ostrov
+        ostrov = ostrov.fitit();
+        elite = ostrov.select('best',3);                % vyberie 5 najpelsich
+        rest = ostrov.select('random',27);              % zvisok doplni nahodnym vyberom
+        rest = rest.toolbox26('crossov',2,1);           % funkcia crossov zo stareho toolboxu
+        rest = rest.toolbox26('mutx',0.2,rest.space);   % to iste
+        rest = rest.toolbox26('muta',0.1,rest.space(2,:) .* 0.01, rest.space);    % aditivna mutacia o 1% zo space hodnoty
+        ostrov = elite.join(rest);                      % spoji elitu so zviskom
+        disp(['aktualna generacia: ' num2str(i) ' behu = '  num2str(p)])
+        stat(i,p) = ostrov.getstats('min');
+        plot(stat)
+        pause(0.001)
+    end
+    world.islands(p) = ostrov;
+end

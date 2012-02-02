@@ -1,0 +1,1 @@
+pri migracii nemigruje fitnes funkcia resp. nevytvara sa zlozka pre fitnes funkciu pri joinovani... alebo ano?

@@ -1,0 +1,16 @@
+classdef INDIVIDUAL
+    properties
+        gene;   %   the generation id
+        fitnes;
+        genid;
+        velocity;
+    end
+    methods
+        function[obj]=INDIVIDUAL(gene)
+            obj.gene=gene;
+            obj.fitnes=inf;
+        end
+    end
+end
+            
+        
