@@ -3,6 +3,8 @@ classdef ISLAND
         genes;          %   genetic data of the population on the island
         fitnes;         %   fitnes values of the population
         
+        format = 'double'; %   the format of the genetic data matrix
+        
         %PSO data
         velocity;
         social = struct('momentum',[],'indiv',[],'swarm',[]);  %  the three social constants what determines the working of the algorithm.
@@ -111,6 +113,8 @@ classdef ISLAND
                              otherwise
                                  error(['Algorithm type ' varargin{c+1} ' is not specified'])
                          end
+                     case 'format'
+                         obj.format = varargin{c+1};                 
                          
                  end
                  catch
@@ -119,9 +123,7 @@ classdef ISLAND
              end
         end
         
-        function[obj]=fitit(varargin)    %   evaluates the fitnes for the island ??? does it work?
-            
-            
+        function[obj]=fitit(obj)    %   evaluates the fitnes for the island ??? does it work?
             
                   if size(obj.fitnes,2) < size(obj.genes,2)
                       obj.fitnes = [obj.fitnes ones(size(1,obj.genes,2) - size(obj.fitnes,2)*inf)];
@@ -166,6 +168,7 @@ classdef ISLAND
 
             end
             obj.genes = rand(obj.popsize,size(obj.space,2)).* abs(repmat(obj.space(2,:),obj.popsize,1)-repmat(obj.space(1,:),obj.popsize,1)) - repmat(obj.space(2,:),obj.popsize,1);
+            obj.genes = eval([obj.format '(obj.genes);']);
             obj.fitnes = ones(1,obj.popsize)*inf;
             switch obj.type
                 case 'GA'
@@ -346,14 +349,8 @@ classdef ISLAND
         
         function[obj]=stats_update(obj)     %   updates the statistical data of the island
 %             tmp=obj.extract('fitnes');
-            obj.stats = [mean(obj.fitnes) max(obj.fitnes) min(obj.fitnes) median(obj.fitnes) mode(obj.fitnes) std(obj.fitnes) var(obj.fitnes) cov(obj.fitnes) affinity(obj.fitnes) obj.evaltime size(obj.genes,1) adist(obj.fitnes) obj.bestknown.value];
-        
-            function[ad]=adist(obj)
-%                  tmp=obj.extract('genes');
-%                  ad = sum(sum(dist(tmp)))/(size(dist,1)*size(dist,2) - size(dist,1));
-                    ad = 0;     % this is not working for now... need to debug
-            end
-            
+            obj.stats = [mean(obj.fitnes) max(obj.fitnes) min(obj.fitnes) median(obj.fitnes) mode(obj.fitnes) std(obj.fitnes) var(obj.fitnes) cov(obj.fitnes) affinity(obj.fitnes) obj.evaltime size(obj.genes,1) mean(pdist(obj.genes)) obj.bestknown.value];
+                  
             function[aff]=affinity(obj) %   calculates the affinity of the genes... TODO!!!
 %                 if size(obj.eps,2) ~= 0
 %                     tmp=obj.extract('genes');

@@ -1,0 +1,8 @@
+function[aaff]=globaff(g,eps)
+
+if size(g,1) > 1
+    aaff = sum(affinity([g
+else
+end
+    
+end

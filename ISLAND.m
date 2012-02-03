@@ -349,14 +349,8 @@ classdef ISLAND
         
         function[obj]=stats_update(obj)     %   updates the statistical data of the island
 %             tmp=obj.extract('fitnes');
-            obj.stats = [mean(obj.fitnes) max(obj.fitnes) min(obj.fitnes) median(obj.fitnes) mode(obj.fitnes) std(obj.fitnes) var(obj.fitnes) cov(obj.fitnes) affinity(obj.fitnes) obj.evaltime size(obj.genes,1) adist(obj.fitnes) obj.bestknown.value];
-        
-            function[ad]=adist(obj)
-%                  tmp=obj.extract('genes');
-%                  ad = sum(sum(dist(tmp)))/(size(dist,1)*size(dist,2) - size(dist,1));
-                    ad = 0;     % this is not working for now... need to debug
-            end
-            
+            obj.stats = [mean(obj.fitnes) max(obj.fitnes) min(obj.fitnes) median(obj.fitnes) mode(obj.fitnes) std(obj.fitnes) var(obj.fitnes) cov(obj.fitnes) affinity(obj.fitnes) obj.evaltime size(obj.genes,1) mean(pdist(obj.genes)) obj.bestknown.value];
+                  
             function[aff]=affinity(obj) %   calculates the affinity of the genes... TODO!!!
 %                 if size(obj.eps,2) ~= 0
 %                     tmp=obj.extract('genes');

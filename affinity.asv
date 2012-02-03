@@ -1,0 +1,5 @@
+function[aff]=affinity(g1,g2,eps)
+
+aff=sum(abs(g1) - g(2,:)) < eps)/size(g,2);
+
+end
