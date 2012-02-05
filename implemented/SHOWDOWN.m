@@ -1,20 +1,18 @@
 % the ultimate showdown between two algorithms
-clc
-clear
 
-f = rand(1000,1000); % generating a random matrix to compare
+for i=2:1:100
+    f = rand(i,100); % generating a random matrix to compare
 
-tic
-[dup oldres each] = oldaff(f,0.1);
-times(1) = toc;
-disp('oldaff done')
-tic
-newres = (globaff(f,0.1)*200)/(size(f,1)^2 - size(f,1));
-times(2) = toc;
-
-
-
-
-
- 
- bar(times)
+    tic
+    [dup oldres each] = oldaff(f,0.1);
+    times(i,1) = toc;
+%     disp('oldaff done')
+    tic
+    newres = globaff(f,0.1);
+    times(i,2) = toc;
+    
+    i
+end
+ plot(times)
+ legend('old','new')
+%  bar(times)
