@@ -46,7 +46,7 @@ classdef ISLAND
         
         function[obj]=set(obj,varargin)     %   universal setup function for the island
              args_in=size(varargin,2);
-             for c=2:args_in
+             for c=1:args_in
                  try
                  switch varargin{c}
                      case 'space'                   % for generating space function
@@ -349,26 +349,28 @@ classdef ISLAND
         
         function[obj]=stats_update(obj)     %   updates the statistical data of the island
 %             tmp=obj.extract('fitnes');
-            obj.stats = [mean(obj.fitnes) max(obj.fitnes) min(obj.fitnes) median(obj.fitnes) mode(obj.fitnes) std(obj.fitnes) var(obj.fitnes) cov(obj.fitnes) affinity(obj.fitnes) obj.evaltime size(obj.genes,1) mean(pdist(obj.genes)) obj.bestknown.value];
-                  
-            function[aff]=affinity(obj) %   calculates the affinity of the genes... TODO!!!
-%                 if size(obj.eps,2) ~= 0
-%                     tmp=obj.extract('genes');
-%                     [x y]=size(tmp);
-%                     edist = dist(tmp);  %   calculating eucledian distance matrix
-%                     epsm = zeros(size(edist));
-%                     for i=1:size(epsm,2)
-%                         epsm(:,i) = obj.eps(i);
-%                     end
-%                     edist = floor((edist - epsm)/max(max(obj.space))).*-1;  %   these are similar to each other
-%                     %   TODO
-%                 else
-%                     aff=0;  % not calculating, its heavy
-%                 end
-                
-                aff = 0; %  remove if finished :)
-                
-            end;
+            obj.stats = [mean(obj.fitnes) max(obj.fitnes) min(obj.fitnes) median(obj.fitnes) mode(obj.fitnes) std(obj.fitnes) var(obj.fitnes) cov(obj.fitnes) getaff() obj.evaltime size(obj.genes,1) mean(pdist(obj.genes)) obj.bestknown.value];
+
+            
+            %   TODO: remove the recursion and speed up the calculation.
+            
+            function[caff] = getaff()       %   function to call the global affinity value in percentual measure
+                caff = (globaff(obj.genes,obj.eps)*200)/(size(obj.genes,1)^2 -size(obj.genes,1));
+            end
+            
+            function[aff]=affinity(g1,g2,eps)   %   calculates the affinity of two vectors
+               aff=sum(abs(g1 - g2) < eps,2)/size(g1,2);
+            end    
+            
+            function[aaff]=globaff(g,eps)       %   recursive algorithm to calculate the partial affinity. the value is corrected in the function getaff
+                if size(g,1) > 2
+                    aaff = globaff(g(2:size(g,1),:),eps);
+                    aaff = sum(affinity(repmat(g(1,:),size(g(2:size(g,1),:),1),1),g(2:size(g,1),:),eps)) + aaff;
+                else
+                    aaff = affinity(g(1,:),g(2,:),eps);
+                end
+            end
+           
         end;
         
         function[obj]=update(obj)   %   updates the data of the island

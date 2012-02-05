@@ -6,5 +6,7 @@ if size(g,1) > 2
 else
     aaff = affinity(g(1,:),g(2,:),eps);
 end
-    
+    function[aff]=affinity(g1,g2,eps)
+        aff=sum(abs(g1 - g2) < eps,2)/size(g1,2);
+    end
 end

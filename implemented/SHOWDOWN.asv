@@ -1,0 +1,14 @@
+% the ultimate showdown between two algorithms
+
+
+f = rand(i,10); % generating a random matrix to compare
+   tic
+    [dup oldres each] = oldaff(f,0.1);
+    times(1,i) = toc;
+
+    tic
+    newres = (globaff(f,0.1)*200)/(size(f,1)^2 - size(f,1));
+    times(2,i) = toc;
+    disp(['population size: ' num2str(i)])
+ 
+ bar(times)
