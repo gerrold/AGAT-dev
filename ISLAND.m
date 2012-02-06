@@ -359,12 +359,18 @@ classdef ISLAND
 %             end
             
            function[aaff]=getaff(g,eps)
-            aaff = uint8(0);
-                for i=1:size(g,1)
-                    aaff = aaff + sum(sum(abs(repmat(g(i,:),size(g,1),1) - g) < eps,2))/size(g,2) - 1;
-                end
-                aaff = aaff/(size(g,1)^2 - size(g,1))*100;   
-            end
+           % the previous function is slower... for unknown reason.
+           % credits for the update for Sekaj
+           [vp,vr]=size(pop);
+            n=0; a=0;
+
+            for prvy=1:(vp-1)    
+                for druhy=(prvy+1):vp
+                     n=n+1;         
+                    a=a+sum(abs(pop(prvy,:)-pop(druhy,:))< eps)/vr;
+                end;
+            end;
+            aff=a/n;
            
         end;
         

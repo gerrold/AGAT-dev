@@ -1,18 +1,21 @@
 % the ultimate showdown between two algorithms
-
+clc
+clear
 for i=2:1:100
-    f = rand(i,100); % generating a random matrix to compare
+    f = rand(i,200); % generating a random matrix to compare
 
     tic
-    [dup oldres each] = oldaff(f,0.1);
+    newres = globaff2(f,0.1);
+%     oldres = globaff2(f,0.1);
     times(i,1) = toc;
 %     disp('oldaff done')
     tic
-    newres = globaff(f,0.1);
-    times(i,2) = toc;
+    oldres = affin2(f,0.1);
     
+    times(i,2) = toc;
+    [oldres newres]
     i
 end
  plot(times)
- legend('old','new')
+ legend('globaff2','affin2')
 %  bar(times)
