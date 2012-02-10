@@ -349,7 +349,7 @@ classdef ISLAND
         
         function[obj]=stats_update(obj)     %   updates the statistical data of the island
 %             tmp=obj.extract('fitnes');
-            obj.stats = [mean(obj.fitnes) max(obj.fitnes) min(obj.fitnes) median(obj.fitnes) mode(obj.fitnes) std(obj.fitnes) var(obj.fitnes) cov(obj.fitnes) getaff() obj.evaltime size(obj.genes,1) mean(pdist(obj.genes)) obj.bestknown.value];
+            obj.stats = [mean(obj.fitnes) max(obj.fitnes) min(obj.fitnes) median(obj.fitnes) mode(obj.fitnes) std(obj.fitnes) var(obj.fitnes) cov(obj.fitnes) getaff(obj.genes,obj.eps) obj.evaltime size(obj.genes,1) mean(pdist(obj.genes)) obj.bestknown.value];
 
             
             %   TODO: remove the recursion and speed up the calculation.
@@ -359,12 +359,19 @@ classdef ISLAND
 %             end
             
            function[aaff]=getaff(g,eps)
-            aaff = uint8(0);
-                for i=1:size(g,1)
-                    aaff = aaff + sum(sum(abs(repmat(g(i,:),size(g,1),1) - g) < eps,2))/size(g,2) - 1;
-                end
-                aaff = aaff/(size(g,1)^2 - size(g,1))*100;   
-            end
+           % the previous function is slower... for unknown reason.
+           % credits for the update for Sekaj
+           [vp,vr]=size(pop);
+            n=0; a=0;
+
+            for prvy=1:(vp-1)    
+                for druhy=(prvy+1):vp
+                     n=n+1;         
+                    a=a+sum(abs(pop(prvy,:)-pop(druhy,:))< eps)/vr;
+                end;
+            end;
+            aff=a/n;
+           end
            
         end;
         
@@ -443,6 +450,18 @@ classdef ISLAND
                     stat=varargin{1}.stats(13);
             end;
         end;
+        
+        function[filtered]=statfilt(obj,target,type,frame)
+             if size(obj.trail,2) == 0
+                 error('no data avaible to calculate filtered data');
+             end
+             filt_type = eval('@' type);
+             data = obj.gettrail(target);
+             if length(data) < frame
+                 data = repmat(data,1,ceil(frame/length(data)));    % duplicating data to enhance correct filtering
+             end
+             data = data(length(data)-frame:end)
+        end
         
     end
 end

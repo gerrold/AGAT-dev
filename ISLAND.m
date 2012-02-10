@@ -75,6 +75,8 @@ classdef ISLAND
                                  %  generates [-10 -1 -10 -1 -10 -1; 10 1 10 1 10 1] by
                                  %  cycling. 
                          end
+                         obj = obj.set(obj,'eps',abs(obj.space(1,:)-obj.space(2,:)) * 0.005); % changing the eps for affinity calculation
+                         
                      case 'size'
                          obj.popsize = varargin{c+1};
                          %  example:
@@ -126,7 +128,7 @@ classdef ISLAND
         function[obj]=fitit(obj)    %   evaluates the fitnes for the island ??? does it work?
             
                   if size(obj.fitnes,2) < size(obj.genes,2)
-                      obj.fitnes = [obj.fitnes ones(size(1,obj.genes,2) - size(obj.fitnes,2)*inf)];
+                      obj.fitnes = [obj.fitnes ones(size(obj.genes,2) - size(obj.fitnes,2)*inf)];
                   end
             
 %                 if(obj.fitnes(c) == inf)
@@ -305,7 +307,7 @@ classdef ISLAND
                         obj.fitnes = varargin{1}.fitnes(1:varargin{c+1});
                     case 'random'
                         rnd = rand(1,varargin{c+1}); % need the same numbers for getting the fitnes
-                        obj.genes = varargin{1}.genes(ceil(rnd*size(varargin{1}.genes,2)),:);
+                        obj.genes = varargin{1}.genes(ceil(rnd*size(varargin{1}.genes,1)),:);
                         obj.fitnes = varargin{1}.fitnes(ceil(rnd*size(varargin{1}.fitnes,2)));
                     case 'worst'
                         varargin{1} = varargin{1}.sortit();
@@ -324,7 +326,7 @@ classdef ISLAND
             [fit order] = sort([ varargin{1}.fitnes]); 
 %             indivs = INDIVIDUAL(inf);
             c=size(varargin{1}.genes,2);
-            obj.genes(1:c,:) = varargin{1}.genes(order(1:c),:);
+            obj.genes = varargin{1}.genes(order,:);
             obj.fitnes = fit;
 %             obj.evaltime =  varargin{1}.evaltime;       % the evaluation time wasnt working without this :(
 %             for c=1:size(varargin{1}.population,2)
@@ -358,7 +360,7 @@ classdef ISLAND
 %                 caff = (globaff(obj.genes,obj.eps)*200)/(size(obj.genes,1)^2 -size(obj.genes,1));
 %             end
             
-           function[aaff]=getaff(g,eps)
+           function[aaff]=getaff(pop,eps)
            % the previous function is slower... for unknown reason.
            % credits for the update for Sekaj
            [vp,vr]=size(pop);
@@ -370,7 +372,8 @@ classdef ISLAND
                     a=a+sum(abs(pop(prvy,:)-pop(druhy,:))< eps)/vr;
                 end;
             end;
-            aff=a/n;
+            aaff=a/n;
+           end
            
         end;
         
@@ -449,6 +452,26 @@ classdef ISLAND
                     stat=varargin{1}.stats(13);
             end;
         end;
+        
+        function[data]=statfilt(obj,target,type,frame)
+            %   where:
+            %   target - statistical data we want to filter
+            %   type - filter type we want to use (for example mean)
+            %   frame - the number of data steps we want to use
+            
+             if size(obj.trail,2) == 0
+                 error('no data avaible to calculate filtered data');
+             end
+             filt_type = eval(['@' type]);
+             data = obj.gettrail(target);
+             if length(data) < frame
+                 data = repmat(data,ceil(frame/length(data)),1);    % duplicating data to enhance correct filtering
+             end
+             data = data(length(data)-frame+1:end);
+             %  data prepared for filtering
+             data = filt_type(data);
+             
+        end
         
     end
 end
