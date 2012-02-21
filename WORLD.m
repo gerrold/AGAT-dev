@@ -214,6 +214,49 @@ classdef WORLD
                 map=biograph(cm)
                 view(map)
         end
+        
+        function[obj] = restruct(varargin)
+            obj = varargin{1};
+            
+            %clusterset = {'linkage','ward'};   % no cluster setup is
+            %possible
+            scatter = 9;    %how many drops will be created after blobulation
+            
+            if nargin > 1
+                for i=2:nargin
+                    try
+                    switch varargin{i}
+                        case 'scatter'
+                            scatter = varargin{i+1};
+                        case 'clusterset'
+                            clusterset = varargin{i+1};
+                    end
+                    catch
+                    end
+                end
+            end
+            
+            % dataset = [obj.islands(:).genes]'; % i have to remove the 
+            dataset = [];
+            for ii=1:length(obj.islands)
+                dataset = [dataset; obj.islands(ii).genes];                
+            end
+            
+            obj.islands = ISLAND;
+            % unbelievable there is no other way:
+            for iv = 1:scatter
+                 obj.islands(iv) = ISLAND('space','direct',obj.space,'fitfunc',obj.fitfunc,'popsize',obj.initPopsize,'type',obj.type,'format',obj.format);
+            end
+            
+            
+            clustered = clusterdata(dataset,'linkage','ward','maxclust',scatter);
+            
+            %   fix it, it does not work!!!
+            obj.islands(clustered).genes = dataset(clustered,:);
+            obj.islands(clustered).fitnes = ones(1,size(obj.islands(clustered).genes,2))*inf;
+            
+            
+        end
     end
 end
     

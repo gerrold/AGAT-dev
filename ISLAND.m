@@ -391,7 +391,7 @@ classdef ISLAND
         end
         
         function[stat]=gettrail(varargin)    %   builds a matrix from the requested statistical data
-            obj = varargin{1}
+            obj = varargin{1};
              for c=2:nargin
                 switch varargin{c}
                     case 'mean'
@@ -460,9 +460,9 @@ classdef ISLAND
             %   frame - the number of data steps we want to use
             
              if size(obj.trail,2) == 0
-                 error('no data avaible to calculate filtered data');
+                 error('no data avaible to calculate filtered data')
              end
-             filt_type = eval(['@' type]);
+             filt_type = eval(['@' type ';']);
              data = obj.gettrail(target);
              if length(data) < frame
                  data = repmat(data,ceil(frame/length(data)),1);    % duplicating data to enhance correct filtering

@@ -5,7 +5,7 @@ clc
 close all
 
 w = WORLD;
-w = w.set('space','homo',-500,500,2,'initPopSize',10,'initSize',1,'structure',w.cmg('star',5),'fitfunc','schwef','type','PSO')
+w = w.set('space','homo',-500,500,10,'initPopSize',10,'initSize',1,'structure',w.cmg('star',5),'fitfunc','schwef','type','PSO')
 w = w.genesis()
 
 
