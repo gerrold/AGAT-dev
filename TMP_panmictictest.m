@@ -4,7 +4,8 @@ clear
 close all
 
 % je to jedno ci sa algoritmus naparametrizuje pri vyvoreni alebo pri seedovani  
-ostrov = ISLAND('space','homo',-500,500,10,'fitfunc','schwef','population',30);
+ostrov = ISLAND;
+ostrov = ostrov.set('space','homo',0,1,10,'fitfunc','origamy','size',30);
 ostrov = ostrov.seed();
 
 % ostrov = ISLAND();

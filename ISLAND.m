@@ -169,7 +169,8 @@ classdef ISLAND
             obj =  obj.set(obj,varargin{2:nargin-1});      % believe in yourself :) dont fix things what works
 
             end
-            obj.genes = rand(obj.popsize,size(obj.space,2)).* abs(repmat(obj.space(2,:),obj.popsize,1)-repmat(obj.space(1,:),obj.popsize,1)) - repmat(obj.space(2,:),obj.popsize,1);
+%             obj.genes = rand(obj.popsize,size(obj.space,2)).* abs(repmat(obj.space(2,:),obj.popsize,1)-repmat(obj.space(1,:),obj.popsize,1)) - repmat(obj.space(1,:),obj.popsize,1); % changed the last repmat. it repeats the lover value hopefully dont screews up the 0 up value
+            obj.genes = repmat(obj.space(1,:),obj.popsize,1) + rand(obj.popsize,size(obj.space,2)) .* (repmat(obj.space(2,:),obj.popsize,1) - repmat(obj.space(1,:),obj.popsize,1));
             obj.genes = eval([obj.format '(obj.genes);']);
             obj.fitnes = ones(1,obj.popsize)*inf;
             switch obj.type
