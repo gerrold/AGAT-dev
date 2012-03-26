@@ -9,7 +9,7 @@ classdef ISLAND
         velocity;
         social = struct('momentum',[],'indiv',[],'swarm',[]);  %  the three social constants what determines the working of the algorithm.
         memory = struct('value',[],'pos',[]);  %   saves the individual positions
-        bestknown = struct('value',[inf],'pos',[]);;
+        bestknown = struct('value',inf,'pos',[]);;
         
         stats;          %   current statistical data
         trail;          %   loged statistical data
@@ -119,8 +119,8 @@ classdef ISLAND
                          obj.format = varargin{c+1};                 
                          
                  end
-                 catch
-                     
+                 catch err
+%                      disp(['dont bother but: ' err.message])
                  end
              end
         end
@@ -209,8 +209,8 @@ classdef ISLAND
             cd(retdir);
             obj = varargin{1};
             
-            tmp = obj.genes - newpop; % TODO: change the fitnes only to the individuals what have been changed!
-            
+%             tmp = obj.genes - newpop; % TODO: change the fitnes only to the individuals what have been changed!
+%             removed because it was unused
             
             obj.genes = newpop;
             obj.fitnes = ones(1,size(newpop,1)).*inf;
@@ -326,7 +326,8 @@ classdef ISLAND
             varargin{1} =  varargin{1}.fitit();
             [fit order] = sort([ varargin{1}.fitnes]); 
 %             indivs = INDIVIDUAL(inf);
-            c=size(varargin{1}.genes,2);
+%             c=size(varargin{1}.genes,2);
+%               removed because c was unused
             obj.genes = varargin{1}.genes(order,:);
             obj.fitnes = fit;
 %             obj.evaltime =  varargin{1}.evaltime;       % the evaluation time wasnt working without this :(

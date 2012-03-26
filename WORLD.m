@@ -72,8 +72,9 @@ classdef WORLD
                         case 'format'
                             obj.format = varargin{c+1};        
                     end
-                    catch
+                    catch err
                         % ugly but foolproof :D
+                        disp(['catched: ' err])
                     end
                 end
             end
