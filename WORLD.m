@@ -74,7 +74,7 @@ classdef WORLD
                     end
                     catch err
                         % ugly but foolproof :D
-                        disp(['catched: ' err])
+%                         disp(['catched: ' err])
                     end
                 end
             end

@@ -9,7 +9,7 @@ w = w.set('space','homo',-500,500,10,'initPopSize',10,'initSize',1,'structure',w
 w = w.genesis()
 
 
-for g=1:1000
+for g=1:100
     for i=1:w.initSize
         island = w.islands(i);
         island = island.move();
