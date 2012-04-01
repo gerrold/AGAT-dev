@@ -3,13 +3,14 @@ clc
 clear all
 % ----------------------------------
 % configuration data
-generations = 5000;    %   how many generation will run
+generations = 1000;    %   how many generation will run
 
 initpopsize = 50;
 islandNum = 9;
 
 resources = initpopsize/2 * 9;    % polovica poctu jedincov * pocet ostrovov
 
+blobTreshold = 100;
 % ----------------------------------
 
 
@@ -22,7 +23,7 @@ wa = wa.genesis();
 for g=1:generations
     disp(['Adaptive PGA: ' num2str(g)])
     
-    for i=1:wa.initSize        
+    for i=1:length(wa.islands)
         island = wa.islands(i);
         island = island.fitit();
         island = island.update();
@@ -43,9 +44,14 @@ for g=1:generations
         island = elite.join(rest);                      % spoji elitu so zviskom        
         
         island.vars.generation = island.vars.generation + 1; % dalsia generacia
-                
-        wa.islands(i) = island;
+
+        if island.vars.generation < 64
+            if size(island.genes,1) > blobTreshold
+                [island newisland] = island.blobulate(2);
+                wa.islands(length(wa.islands)+1) = newisland;
+            end
         
+        wa.islands(i) = island;                        
        
     end;
     
@@ -54,8 +60,12 @@ for g=1:generations
     if g>=2
         clear nabs
         for p=1:size(wa.islands,2)
-%             nabs(p) = abs(wa.islands(p).vars.convergence(g-1) - wa.islands(p).vars.convergence(g));
-              nabs(p)
+            nabs(p) = abs(wa.islands(p).vars.convergence(g-1) - wa.islands(p).vars.convergence(g));
+            try  
+%             nabs(p) = abs(mean(wa.islands(p).vars.convergence(g-16:end)));
+            catch
+                nabs(p) = abs(mean(wa.islands(p).vars.convergence(:)));
+            end
         end    
 %     nabs = nabs - min(nabs);
       nabs = nabs + 1;
@@ -70,7 +80,7 @@ end
 %----------------------------------good old classic
 
 w = WORLD;
-w = w.set('space','homo',-500,500,10,'initPopSize',50,'initSize',10,'structure',wa.cmg('grid',5,5),'fitfunc','eggholder');
+w = w.set('space','homo',-500,500,10,'initPopSize',50,'initSize',9,'structure',w.cmg('grid',3,3),'fitfunc','eggholder');
 w = w.genesis();
 
 for g=1:generations
@@ -94,6 +104,7 @@ for g=1:generations
 end
 
 plot(min(w.trail.min))
-hold
+hold on
 plot(min(wa.trail.min),'r')
+hold off
 legend('classic','adaptive')

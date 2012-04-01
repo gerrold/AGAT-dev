@@ -3,13 +3,14 @@ clc
 clear all
 % ----------------------------------
 % configuration data
-generations = 1000;    %   how many generation will run
+generations = 200;    %   how many generation will run
 
 initpopsize = 50;
 islandNum = 9;
 
-resources = initpopsize/2 * 9;    % polovica poctu jedincov * pocet ostrovov
+resources = initpopsize/1.5 * 9;    % polovica poctu jedincov * pocet ostrovov
 
+blobTreshold = 150;
 % ----------------------------------
 
 
@@ -22,7 +23,7 @@ wa = wa.genesis();
 for g=1:generations
     disp(['Adaptive PGA: ' num2str(g)])
     
-    for i=1:wa.initSize        
+    for i=1:length(wa.islands)
         island = wa.islands(i);
         island = island.fitit();
         island = island.update();
@@ -35,7 +36,7 @@ for g=1:generations
 %             disp(['support pre ostrov ' num2str(i) ' je ' num2str(ressup(i))])
         end
         %-----------------------------
-        elite = island.select('best',3);                % vyberie 5 najpelsich
+        elite = island.select('best',3);                % vyberie 3 najpelsich
         rest = island.select('random',selRest);              % zvisok doplni nahodnym vyberom
         rest = rest.toolbox26('crossov',2,1);           % funkcia crossov zo stareho toolboxu
         rest = rest.toolbox26('mutx',0.2,rest.space);   % to iste
@@ -43,9 +44,16 @@ for g=1:generations
         island = elite.join(rest);                      % spoji elitu so zviskom        
         
         island.vars.generation = island.vars.generation + 1; % dalsia generacia
-                
-        wa.islands(i) = island;
-        
+
+        if island.vars.generation < 64
+            if size(island.genes,1) > blobTreshold
+                disp(['island ' num2str(i) ' made blob'])
+                [island newisland] = island.blobulate(2);
+                newisland.vars.generation = 0;
+                wa.islands(length(wa.islands)+1) = newisland;                
+            end
+        end
+        wa.islands(i) = island;                        
        
     end;
     

@@ -208,13 +208,12 @@ classdef WORLD
             obj.trail.affinity(:,size(obj.trail.affinity,2)) = agdata(:,9);
             
             obj.trail.evaltime(length(obj.statistics.evaltime),size(obj.trail.evaltime,2)+1) = 0;
-            obj.trail.evaltime(:,size(obj.trail.evaltime,2)) = agdata(:,10);
+            obj.trail.evaltime(:,size(obj.trail.evaltime,2)+1) = agdata(:,10);
             
             obj.trail.size(length(obj.statistics.size),size(obj.trail.size,2)+1) = 0;
-            obj.trail.size(:,size(obj.trail.size,2)) = agdata(:,11);
+            obj.trail.size(:,size(obj.trail.size,2)+1) = agdata(:,11);
             
-            obj.trail.bestknown(length(obj.statistics.bestknown),size(obj.trail.bestknown,2)+1) = 0;
-            obj.trail.bestknown(:,size(obj.trail.size,2)) = agdata(:,13);
+            obj.trail.bestknown(:,size(obj.trail.size,2)+1) = agdata(:,13);
             
         end
         
