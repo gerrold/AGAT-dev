@@ -482,16 +482,8 @@ classdef ISLAND
             clustered = clusterdata(obj.genes,'linkage','ward','maxclust',num);
              for i=1:num
                 blob = obj;
-                blob.genes = 0;
-                blob.fitnes = 0;
-                
-                inc = 1;
-                for ii=1:size(obj.genes,1)
-                    if clustered(ii) == i
-                        blob.genes(inc,:) = obj.genes(ii);
-                        inc = inc + 1;
-                    end
-                end
+                for ii=1:
+                blob.genes = obj.genes();
                 varargout{i} = blob;
              end
         end

@@ -9,7 +9,7 @@ classdef WORLD
         islands;            %   works actually with an island
         
         type = 'GA';        %   what type of evolutionary algorithm is present default Genetic Algorithm
-        
+        vars;               %   aditional variables to pass for the ISLANDS on start
         
         structure  = struct('connection',[],'strenght',[]);
         statistics = struct('mean',[],'max',[],'min',[],'median',[],'mode',[],'std',[],'var',[],'cov',[],'affinity',[],'evaltime',[],'size',[],'bestknown',[]);
@@ -36,7 +36,7 @@ classdef WORLD
                             obj.structure.strenght = varargin{c+1};
                         case 'initSize'
                             obj.initSize = varargin{c+1};
-                        case 'initPopsize'
+                        case 'initPopSize'
                             obj.initPopsize = varargin{c+1};
                         case 'space'
                              switch varargin{c+1}
@@ -71,6 +71,8 @@ classdef WORLD
                             obj.type = varargin{c+1};
                         case 'format'
                             obj.format = varargin{c+1};        
+                        case 'vars'
+                            obj.vars = varargin{c+1};
                     end
                     catch err
                         % ugly but foolproof :D
@@ -84,7 +86,7 @@ classdef WORLD
             obj = varargin{1};
              obj.islands = ISLAND %(obj.space,'fitfunc',obj.fitfunc,'population',obj.initPopsize);
             for c = 1:obj.initSize
-                obj.islands(c) = ISLAND('space','direct',obj.space,'fitfunc',obj.fitfunc,'popsize',obj.initPopsize,'type',obj.type,'format',obj.format);
+                obj.islands(c) = ISLAND('space','direct',obj.space,'fitfunc',obj.fitfunc,'popsize',obj.initPopsize,'type',obj.type,'format',obj.format,'vars',obj.vars);
         %                 obj.islands(c) = obj.islands(c).set(obj.spaceCODE,'fitfunc',obj.fitfunc,'population',obj.initPopsize);
                 obj.islands(c) = obj.islands(c).seed();
             end

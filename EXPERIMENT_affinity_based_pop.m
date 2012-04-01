@@ -22,7 +22,7 @@ for r=1:runz
 
 % je to jedno ci sa algoritmus naparametrizuje pri vyvoreni alebo pri seedovani  
 ostrov = ISLAND;
-ostrov = ostrov.set('space','homo',0,12,variables,'fitfunc','griewank','popsize',100,'format','uint8');
+ostrov = ostrov.set('space','homo',0,12,variables,'fitfunc','griewank','popsize',100);
 ostrov = ostrov.seed();
 break
 % ostrov = ISLAND();
