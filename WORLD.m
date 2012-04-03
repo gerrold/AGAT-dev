@@ -283,6 +283,56 @@ classdef WORLD
             
             
         end
+        
+        function[obj]= delisland(varargin)
+            % usage: ISLAND.delisland(id,mode)
+            % where: id is the number of the island
+            %        mode can be: clean (default)
+            obj = varargin{1};
+            rm = varargin{2};   % not to fast soulution, but at least its transparent            
+            if nargin > 2
+                mode = varargin{2};
+            else
+                mode = 'clean';
+            end
+            
+            % removing the actual island from the islands variable
+            obj.islands = [obj.islands(1:rm-1) obj.islands(rm+1:end)];
+            % clearing up data after the island
+            if length(obj.trail.mean) > 1   % in case no data is in the stats, it let them be.
+                switch mode
+                    case 'clean'
+                        %the actual statitistical data
+                        obj.statistics.mean = [obj.statistics.mean(1:rm-1) obj.statistics.mean(rm+1:end)];
+                        obj.statistics.max = [obj.statistics.max(1:rm-1) obj.statistics.max(rm+1:end)];
+                        obj.statistics.min = [obj.statistics.min(1:rm-1) obj.statistics.min(rm+1:end)];
+                        obj.statistics.median = [obj.statistics.median(1:rm-1) obj.statistics.median(rm+1:end)];
+                        obj.statistics.mode = [obj.statistics.mode(1:rm-1) obj.statistics.mode(rm+1:end)];
+                        obj.statistics.std = [obj.statistics.std(1:rm-1) obj.statistics.std(rm+1:end)];
+                        obj.statistics.var = [obj.statistics.var(1:rm-1) obj.statistics.var(rm+1:end)];
+                        obj.statistics.cov = [obj.statistics.cov(1:rm-1) obj.statistics.cov(rm+1:end)];
+                        obj.statistics.affinity = [obj.statistics.affinity(1:rm-1) obj.statistics.affinity(rm+1:end)];
+                        obj.statistics.evaltime = [obj.statistics.evaltime(1:rm-1) obj.statistics.evaltime(rm+1:end)];
+                        obj.statistics.size = [obj.statistics.size(1:rm-1) obj.statistics.size(rm+1:end)];
+                        obj.statistics.bestknown = [obj.statistics.bestknown(1:rm-1) obj.statistics.bestknown(rm+1:end)];
+
+                        %the trail data
+                        obj.trail.mean = [obj.trail.mean(1:rm-1) obj.trail.mean(rm+1:size( obj.trail.mean , 2))];
+                        obj.trail.max = [obj.trail.max(1:rm-1) obj.trail.max(rm+1:size( obj.trail.max , 2))];
+                        obj.trail.min = [obj.trail.min(1:rm-1) obj.trail.min(rm+1:size( obj.trail.min , 2))];
+                        obj.trail.median = [obj.trail.median(1:rm-1) obj.trail.median(rm+1:size( obj.trail.median , 2))];
+                        obj.trail.mode = [obj.trail.mode(1:rm-1) obj.trail.mode(rm+1:size(  obj.trail.mode , 2))];
+                        obj.trail.std = [obj.trail.std(1:rm-1) obj.trail.std(rm+1:size( obj.trail.std , 2))];
+                        obj.trail.var = [obj.trail.var(1:rm-1) obj.trail.var(rm+1:size(  obj.trail.var , 2))];
+                        obj.trail.cov = [obj.trail.cov(1:rm-1) obj.trail.cov(rm+1:size( obj.trail.cov , 2))];
+                        obj.trail.affinity = [obj.trail.affinity(1:rm-1) obj.trail.affinity(rm+1:size( obj.trail.affinity , 2))];
+                        obj.trail.evaltime = [obj.trail.evaltime(1:rm-1) obj.trail.evaltime(rm+1:size( obj.trail.evaltime , 2))];
+                        obj.trail.size = [obj.trail.size(1:rm-1) obj.trail.size(rm+1:size( obj.trail.size , 2))];
+                        obj.trail.bestknown = [obj.trail.bestknown(1:rm-1) obj.trail.bestknown(rm+1:size( obj.trail.bestknown , 2))];
+                end            
+            end
+            
+        end
     end
 end
     
