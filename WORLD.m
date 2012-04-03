@@ -303,18 +303,18 @@ classdef WORLD
                 switch mode
                     case 'clean'
                         %the actual statitistical data
-                        obj.statistics.mean = [obj.statistics.mean(1:rm-1) obj.statistics.mean(rm+1:end)];
-                        obj.statistics.max = [obj.statistics.max(1:rm-1) obj.statistics.max(rm+1:end)];
-                        obj.statistics.min = [obj.statistics.min(1:rm-1) obj.statistics.min(rm+1:end)];
-                        obj.statistics.median = [obj.statistics.median(1:rm-1) obj.statistics.median(rm+1:end)];
-                        obj.statistics.mode = [obj.statistics.mode(1:rm-1) obj.statistics.mode(rm+1:end)];
-                        obj.statistics.std = [obj.statistics.std(1:rm-1) obj.statistics.std(rm+1:end)];
-                        obj.statistics.var = [obj.statistics.var(1:rm-1) obj.statistics.var(rm+1:end)];
-                        obj.statistics.cov = [obj.statistics.cov(1:rm-1) obj.statistics.cov(rm+1:end)];
-                        obj.statistics.affinity = [obj.statistics.affinity(1:rm-1) obj.statistics.affinity(rm+1:end)];
-                        obj.statistics.evaltime = [obj.statistics.evaltime(1:rm-1) obj.statistics.evaltime(rm+1:end)];
-                        obj.statistics.size = [obj.statistics.size(1:rm-1) obj.statistics.size(rm+1:end)];
-                        obj.statistics.bestknown = [obj.statistics.bestknown(1:rm-1) obj.statistics.bestknown(rm+1:end)];
+                        obj.statistics.mean = [obj.statistics.mean(1:rm-1); obj.statistics.mean(rm+1:end)];
+                        obj.statistics.max = [obj.statistics.max(1:rm-1); obj.statistics.max(rm+1:end)];
+                        obj.statistics.min = [obj.statistics.min(1:rm-1); obj.statistics.min(rm+1:end)];
+                        obj.statistics.median = [obj.statistics.median(1:rm-1); obj.statistics.median(rm+1:end)];
+                        obj.statistics.mode = [obj.statistics.mode(1:rm-1); obj.statistics.mode(rm+1:end)];
+                        obj.statistics.std = [obj.statistics.std(1:rm-1); obj.statistics.std(rm+1:end)];
+                        obj.statistics.var = [obj.statistics.var(1:rm-1); obj.statistics.var(rm+1:end)];
+                        obj.statistics.cov = [obj.statistics.cov(1:rm-1); obj.statistics.cov(rm+1:end)];
+                        obj.statistics.affinity = [obj.statistics.affinity(1:rm-1); obj.statistics.affinity(rm+1:end)];
+                        obj.statistics.evaltime = [obj.statistics.evaltime(1:rm-1); obj.statistics.evaltime(rm+1:end)];
+                        obj.statistics.size = [obj.statistics.size(1:rm-1); obj.statistics.size(rm+1:end)];
+                        obj.statistics.bestknown = [obj.statistics.bestknown(1:rm-1); obj.statistics.bestknown(rm+1:end)];
 
                         %the trail data
                         obj.trail.mean = [obj.trail.mean(1:rm-1) obj.trail.mean(rm+1:size( obj.trail.mean , 2))];

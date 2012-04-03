@@ -3,15 +3,15 @@ clc
 clear all
 % ----------------------------------
 % configuration data
-generations = 10000;    %   how many generation will run
+generations = 150;    %   how many generation will run
 
-initpopsize = 100;
+initpopsize = 50;
 islandNum = 9;
 
-resources = initpopsize/2 * islandNum;    % polovica poctu jedincov * pocet ostrovov
+resources = initpopsize/1.5 * islandNum;    % polovica poctu jedincov * pocet ostrovov
 
 blobTreshold = initpopsize * 2;
-starving_tresh = 50;
+starving_tresh = 1;
 
 filter_window = 512;
 % ----------------------------------
@@ -27,6 +27,8 @@ for g=1:generations
     disp(['Adaptive PGA: ' num2str(g)])
     
     for i=1:length(wa.islands)
+        kill = 0; % the island should not to be killed
+        
         island = wa.islands(i);
         island = island.fitit();
         island = island.update();
@@ -40,7 +42,7 @@ for g=1:generations
         end
         %-----------------------------
         elite = island.select('best',3);                % vyberie 3 najpelsich
-        rest = island.select('random',selRest);              % zvisok doplni nahodnym vyberom
+        rest = island.select('random',round(selRest));              % zvisok doplni nahodnym vyberom
         rest = rest.toolbox26('crossov',2,1);           % funkcia crossov zo stareho toolboxu
         rest = rest.toolbox26('mutx',0.2,rest.space);   % to iste
         rest = rest.toolbox26('muta',0.1,rest.space(2,:) .* 0.01, rest.space);    % aditivna mutacia o 1% zo space hodnoty
@@ -50,18 +52,19 @@ for g=1:generations
 % ----------------- blobulation
         if island.vars.generation < filter_window
             if size(island.genes,1) > blobTreshold
-%                 disp(['island ' num2str(i) ' made blob'])
+                disp(['island ' num2str(i) ' made blob'])
                 [island newisland] = island.blobulate(2);
                 newisland.vars.generation = 0;
                 wa.islands(length(wa.islands)+1) = newisland;                
             end
              if island.vars.starvtime > starving_tresh  % ostrov dlhsie stagnuje ako je dovolene
-%                  disp(['island ' num2str(i) ' is starving '])
+                 disp(['island ' num2str(i) ' is starving '])
                  for s = 1:length(wa.islands)       % hladam stagnovany ostrov na zlucenie
                      if wa.islands(s).vars.stagnation == 1  % som nasiel 
-%                          disp(['island ' num2str(i) ' is joining ' num2str(s)])
+                         disp(['island ' num2str(i) ' is joining ' num2str(s)])
                          wa.islands(s) = wa.islands(s).join(island);
-                         island = island.reinit();
+%                          island = island.reinit();
+                         kill = 1; % instruction to kill the island in the end
                      end
                      if s == length(wa.islands)  % som nenasiel 
                          island.vars.stagnation = 1;
@@ -70,7 +73,12 @@ for g=1:generations
              end
         end
 % ------- end of blobulations
-        wa.islands(i) = island;
+        if kill == 0
+            wa.islands(i) = island;
+        else
+            wa = wa.delisland(i);
+            disp(['goodbye for island ' num2str(i)])
+        end
         
     end;
     
