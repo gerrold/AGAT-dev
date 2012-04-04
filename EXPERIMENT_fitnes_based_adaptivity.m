@@ -3,15 +3,15 @@ clc
 clear all
 % ----------------------------------
 % configuration data
-generations = 150;    %   how many generation will run
+generations = 1000;    %   how many generation will run
 
 initpopsize = 50;
 islandNum = 9;
 
 resources = initpopsize/1.5 * islandNum;    % polovica poctu jedincov * pocet ostrovov
 
-blobTreshold = initpopsize * 2;
-starving_tresh = 1;
+blobTreshold = initpopsize * 1.5;
+starving_tresh = 50;
 
 filter_window = 512;
 % ----------------------------------
@@ -21,13 +21,19 @@ wa = WORLD;
 wa = wa.set('space','homo',-500,500,10,'initPopSize',initpopsize,'initSize',islandNum,'structure',wa.cmg('grid',3,3),'fitfunc','eggholder','vars',struct('generation',1,'convergence',0,'starvtime',0,'stagnation',0));
 wa = wa.genesis();
 
-
+% -------------------------
+% gathered data:
+islnum = []; % the number of islands
 
 for g=1:generations
     disp(['Adaptive PGA: ' num2str(g)])
     
-    for i=1:length(wa.islands)
-        kill = 0; % the island should not to be killed
+    islnum(g) = length(wa.islands);
+%     i=1;
+%     while i ~= length(wa.islands)
+      kill = [];
+      for i = 1:length(wa.islands)
+        % the island should not to be killed
         
         island = wa.islands(i);
         island = island.fitit();
@@ -57,14 +63,15 @@ for g=1:generations
                 newisland.vars.generation = 0;
                 wa.islands(length(wa.islands)+1) = newisland;                
             end
-             if island.vars.starvtime > starving_tresh  % ostrov dlhsie stagnuje ako je dovolene
+             if island.vars.starvtime > starving_tresh & island.vars.stagnation ~= 1  % ostrov dlhsie stagnuje ako je dovolene
                  disp(['island ' num2str(i) ' is starving '])
                  for s = 1:length(wa.islands)       % hladam stagnovany ostrov na zlucenie
                      if wa.islands(s).vars.stagnation == 1  % som nasiel 
                          disp(['island ' num2str(i) ' is joining ' num2str(s)])
                          wa.islands(s) = wa.islands(s).join(island);
 %                          island = island.reinit();
-                         kill = 1; % instruction to kill the island in the end
+                         kill(length(kill)+1) = i; % instruction to kill the island in the end
+                         break;
                      end
                      if s == length(wa.islands)  % som nenasiel 
                          island.vars.stagnation = 1;
@@ -73,13 +80,8 @@ for g=1:generations
              end
         end
 % ------- end of blobulations
-        if kill == 0
-            wa.islands(i) = island;
-        else
-            wa = wa.delisland(i);
-            disp(['goodbye for island ' num2str(i)])
-        end
-        
+%         i = i +1;
+        wa.islands(i) = island;
     end;
     
     wa = wa.update();
@@ -87,25 +89,24 @@ for g=1:generations
     if g>=2
         clear nabs
         for p=1:size(wa.islands,2)
-            nabs(p) = abs(wa.islands(p).vars.convergence(g-1) - wa.islands(p).vars.convergence(g));
+            nabs(p) = abs(wa.islands(p).vars.convergence(length(wa.islands(p).vars.convergence)-1) - wa.islands(p).vars.convergence(length(wa.islands(p).vars.convergence)));
 
             if nabs(p) == 0
                 wa.islands(p).vars.starvtime = wa.islands(p).vars.starvtime + 1;
-%                 disp(['island ' num2str(p) ' is stagnating'])
             end
-            
-%             try  
-% %             nabs(p) = abs(mean(wa.islands(p).vars.convergence(g-16:end)));
-%             catch
-%                 nabs(p) = abs(mean(wa.islands(p).vars.convergence(:)));
-%             end
         end    
-%     nabs = nabs - min(nabs);
       nabs = nabs + 1;
     ressup = round(((nabs/sum(nabs)))*resources);
     end
 %   ------------------------
-        
+     if length(kill) > 0            % removing islands marked for kill
+%           wa_tmp = wa;
+%          for ks = 1:length(kill)
+            wa = wa.delisland(kill);  % nice paralel command, i JUST LOVE Matlab
+            disp(['goodbye for island ' num2str(kill)])
+%          end
+%           wa = wa_tmp;
+     end    
     
 end
 
