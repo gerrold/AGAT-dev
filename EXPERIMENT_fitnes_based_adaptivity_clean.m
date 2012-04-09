@@ -3,7 +3,7 @@ clc
 clear all
 % ----------------------------------
 % configuration data
-generations = 10;    %   how many generation will run
+generations = 5000;    %   how many generation will run
 
 initpopsize = 50;
 islandNum = 9;
@@ -19,8 +19,7 @@ measure_num = 10;
 % ----------------------------------
 
 for meas = 1:measure_num
-
-    disp(['Adaptive PGA run ' num2str(meas) '/' num2str(measure_num)])
+  
     wa = WORLD;
     wa = wa.set('space','homo',-500,500,10,'initPopSize',initpopsize,'initSize',islandNum,'structure',wa.cmg('grid',3,3),'fitfunc','eggholder','vars',struct('generation',1,'convergence',0,'starvtime',0,'stagnation',0,'id',0,'pid',0));
     wa = wa.genesis();
@@ -39,35 +38,24 @@ for meas = 1:measure_num
         disp(['Adaptive PGA: ' num2str(g) ' run ' num2str(meas)])
          
         islnum(g) = length(wa.islands);
-    %     i=1;
-    %     while i ~= length(wa.islands)
+
           kill = [];
           for i = 1:length(wa.islands)
-            
-%               tic;                                                               %---------------benchmark start 0
-              
+
             % the island should not to be killed
             
             island = wa.islands(i);
             island = island.fitit();
             island = island.update();
             
-%             time(1) = toc;                                                       %---------------updates 1 
-%             tic
-            
+
             %--------algorithm starts here
             island.vars.convergence(g) = island.statfilt('min','mean',filter_window);
-%             time(2) =  toc;                                                      %---------------filter 2
-%             tic
             if island.vars.generation <= 2
                 selRest = resources/islandNum * 2;            
             else
                 selRest = ressup(i);
-    %             disp(['support pre ostrov ' num2str(i) ' je ' num2str(ressup(i))])
             end
-% %             time(3) = toc;                                                       %----------------resource calculation 3 
-%             tic
-            
             %-----------------------------
             elite = island.select('best',3);                % vyberie 3 najpelsich
             rest = island.select('random',round(selRest));              % zvisok doplni nahodnym vyberom
@@ -77,13 +65,9 @@ for meas = 1:measure_num
             island = elite.join(rest);                      % spoji elitu so zviskom        
 
             island.vars.generation = island.vars.generation + 1; % dalsia generacia
-            
-%             time(4) = toc;                                                       %------------------genetic operations 4
-%             tic
     % ----------------- blobulation
             if island.vars.generation < filter_window
-                if size(island.genes,1) > blobTreshold      % ostrov je vacsi nez maximum
-                    disp(['island ' num2str(i) ' made blob'])
+                if size(island.genes,1) > blobTreshold      % ostrov je vacsi nez maximum                   
                     [island newisland] = island.blobulate(2);
                     newisland.vars.generation = 0;
                     newisland.vars.id = idset;
@@ -92,12 +76,9 @@ for meas = 1:measure_num
                     wa.islands(length(wa.islands)+1) = newisland;                
                 end
                  if island.vars.starvtime > starving_tresh && island.vars.stagnation ~= 1  % ostrov dlhsie stagnuje ako je dovolene
-                      disp(['island ' num2str(i) ' is starving '])
                      for s = 1:length(wa.islands)       % hladam stagnovany ostrov na zlucenie
                          if wa.islands(s).vars.stagnation == 1  % som nasiel 
-                              disp(['island ' num2str(i) ' is joining ' num2str(s)])
                              wa.islands(s) = wa.islands(s).join(island);
-    %                          island = island.reinit();
                              kill(length(kill)+1) = i; % instruction to kill the island in the end
                              break;
                          end
@@ -107,7 +88,6 @@ for meas = 1:measure_num
                      end
                  end
             end
-%             time(5) = toc;                                                       %---------------regulation 5
             
             % ------- end of blobulations
             if islnum(g) < minIslandNum % ak pocet ostrovo je menej nez minimum
@@ -115,17 +95,14 @@ for meas = 1:measure_num
                 wa.islands(islnum(g)+1) = ISLAND;        
                 wa.islands(islnum(g)+1) = wa.islands(islnum(g)+1).set('space','homo',-500,500,10,'initPopSize',initpopsize,'initSize',islandNum,'structure',wa.cmg('grid',3,3),'fitfunc','eggholder','vars',struct('generation',1,'convergence',0,'starvtime',0,'stagnation',0,'id',0,'pid',0));
                 wa.islands(islnum(g)+1) = wa.islands(islnum(g)+1).seed();
-%                 disp('a new island is born')
             end
     
-    %         i = i +1;
             wa.islands(i) = island;
         end;
 
         wa = wa.update();
     %   -----------normalization
         if g>=2
-%             clear nabs
             nabs = zeros(size(wa.islands,2),1);
             for p=1:size(wa.islands,2)
                 nabs(p) = abs(wa.islands(p).vars.convergence(length(wa.islands(p).vars.convergence)-1) - wa.islands(p).vars.convergence(length(wa.islands(p).vars.convergence)));
@@ -139,21 +116,10 @@ for meas = 1:measure_num
         end
     %   ------------------------
          if length(kill) > 0            % removing islands marked for kill
-    %           wa_tmp = wa;
-    %          for ks = 1:length(kill)
                 wa = wa.delisland(kill);  % nice paralel command, i JUST LOVE Matlab
-    %             disp(['goodbye for island ' num2str(kill)])
-    %          end
-    %           wa = wa_tmp;
          end
          toc
-%           plot(islnum)
-%          pause(0.0001)         
-%     disp(['time reaming ' num2str((toc * measure_num * generations) - (toc*g*meas) ) ' seconds'])
     end
-    
-%     bar(time,'stacked')                     %--------------------------------------end of benchmark
-%     break
     
     adapted_worlds(meas) = wa;
    

@@ -20,7 +20,7 @@ function[cmatrix]=grid(sizeX,sizeY)
        for isly = 1:sizeY
 
         cmatrix(c,:) = [help(islx,isly)-1 help(islx,isly)+1 help(islx,isly)-sizeX help(islx,isly)+sizeX];
-        c = c + 1
+        c = c + 1;
 %         xt = xt + 1;
        end
     end;

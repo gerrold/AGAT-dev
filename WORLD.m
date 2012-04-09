@@ -84,9 +84,10 @@ classdef WORLD
         
         function[obj]=genesis(varargin)
             obj = varargin{1};
-             obj.islands = ISLAND %(obj.space,'fitfunc',obj.fitfunc,'population',obj.initPopsize);
+             obj.islands = ISLAND; %(obj.space,'fitfunc',obj.fitfunc,'population',obj.initPopsize);
             for c = 1:obj.initSize
-                obj.islands(c) = ISLAND('space','direct',obj.space,'fitfunc',obj.fitfunc,'popsize',obj.initPopsize,'type',obj.type,'format',obj.format,'vars',obj.vars);
+                obj.islands(c) = ISLAND;
+                obj.islands(c) = obj.islands(c).set('space','direct',obj.space,'fitfunc',obj.fitfunc,'popsize',obj.initPopsize,'type',obj.type,'format',obj.format,'vars',obj.vars);
         %                 obj.islands(c) = obj.islands(c).set(obj.spaceCODE,'fitfunc',obj.fitfunc,'population',obj.initPopsize);
                 obj.islands(c) = obj.islands(c).seed();
             end
