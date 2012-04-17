@@ -10,7 +10,7 @@ classdef WORLD
         
         type = 'GA';        %   what type of evolutionary algorithm is present default Genetic Algorithm
         vars;               %   aditional variables to pass for the ISLANDS on start
-        
+        locvars;            %   local variables to collect.
         structure  = struct('connection',[],'strenght',[]);
         statistics = struct('mean',[],'max',[],'min',[],'median',[],'mode',[],'std',[],'var',[],'cov',[],'affinity',[],'evaltime',[],'size',[],'bestknown',[]);
         trail      = struct('mean',[],'max',[],'min',[],'median',[],'mode',[],'std',[],'var',[],'cov',[],'affinity',[],'evaltime',[],'size',[],'bestknown',[]);

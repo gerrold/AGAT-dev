@@ -1,6 +1,7 @@
 % Advanced paralalel algorithm adaptivity
 clc
 clear all
+
 % ----------------------------------
 % configuration data
 generations = 5000;    %   how many generation will run
@@ -11,9 +12,9 @@ minIslandNum = 3;   % min pocet ostrovov
 resources = initpopsize/1.5 * islandNum;    % polovica poctu jedincov * pocet ostrovov
 
 blobTreshold = initpopsize * 1.5;
-starving_tresh = ceil(generations*0.001);
+starving_tresh = ceil(generations*0.0001);
 
-filter_window = 512;
+filter_window = 128;
 
 measure_num = 10;
 % ----------------------------------
@@ -21,7 +22,7 @@ measure_num = 10;
 for meas = 1:measure_num
   
     wa = WORLD;
-    wa = wa.set('space','homo',-500,500,10,'initPopSize',initpopsize,'initSize',islandNum,'structure',wa.cmg('grid',3,3),'fitfunc','eggholder','vars',struct('generation',1,'convergence',0,'starvtime',0,'stagnation',0,'id',0,'pid',0));
+    wa = wa.set('space','homo',-500,500,5,'initPopSize',initpopsize,'initSize',islandNum,'structure',wa.cmg('grid',3,3),'fitfunc','fnc1','vars',struct('generation',1,'convergence',0,'starvtime',0,'stagnation',0,'id',0,'pid',0));
     wa = wa.genesis();
 
     for idset = 1:length(wa.islands)
@@ -118,14 +119,15 @@ for meas = 1:measure_num
          if length(kill) > 0            % removing islands marked for kill
                 wa = wa.delisland(kill);  % nice paralel command, i JUST LOVE Matlab
          end
-         toc
+         wa.locvars = islnum;
+         toc         
     end
     
     adapted_worlds(meas) = wa;
    
 end
  retdir = cd('experiments')
-    save('fitnes_based_islsize_adapted.mat','adapted_worlds')
+    save('fitnes_based_islsize_adapted_fnc1.mat','adapted_worlds')
     cd(retdir)
 
 %----------------------------------good old classic
@@ -135,7 +137,7 @@ for meas2 = 1:measure_num
     disp(['PGA run ' num2str(meas2) '/' num2str(measure_num)])
     
 w = WORLD;
-w = w.set('space','homo',-500,500,10,'initPopSize',initpopsize,'initSize',9,'structure',w.cmg('grid',3,3),'fitfunc','eggholder');
+w = w.set('space','homo',-500,500,5,'initPopSize',initpopsize,'initSize',9,'structure',w.cmg('grid',3,3),'fitfunc','fnc1');
 w = w.genesis();
 
 for g=1:generations
@@ -168,5 +170,5 @@ classic_worlds(meas2) = w;
 end
 
 retdir = cd('experiments')
-save('fitnes_based_islsize_classic.mat','classic_worlds')
+save('fitnes_based_islsize_classic_fnc1.mat','classic_worlds')
 cd(retdir)

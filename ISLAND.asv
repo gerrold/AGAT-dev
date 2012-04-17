@@ -305,6 +305,7 @@ classdef ISLAND
                 switch varargin{c}
                     case 'best'             %example subpop = island.select('best',5) and it returns the best 5 individuals
                         varargin{1} = varargin{1}.sortit();
+                        if varargin{c+1} >= size(varargin{1},
                         obj.genes = varargin{1}.genes(1:varargin{c+1},:);
                         obj.fitnes = varargin{1}.fitnes(1:varargin{c+1});
                     case 'random'
@@ -482,8 +483,17 @@ classdef ISLAND
             clustered = clusterdata(obj.genes,'linkage','ward','maxclust',num);
              for i=1:num
                 blob = obj;
-                for ii=1:
-                blob.genes = obj.genes();
+                blob.genes = [];
+                blob.fitnes = [];
+                
+                inc = 1;
+                for ii=1:size(obj.genes,1)
+                    if clustered(ii) == i
+                        blob.genes(inc,:) = obj.genes(ii,:);
+                        blob.fitnes(inc) = obj.fitnes(ii);
+                        inc = inc + 1;
+                    end
+                end
                 varargout{i} = blob;
              end
         end

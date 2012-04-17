@@ -305,8 +305,13 @@ classdef ISLAND
                 switch varargin{c}
                     case 'best'             %example subpop = island.select('best',5) and it returns the best 5 individuals
                         varargin{1} = varargin{1}.sortit();
-                        obj.genes = varargin{1}.genes(1:varargin{c+1},:);
-                        obj.fitnes = varargin{1}.fitnes(1:varargin{c+1});
+                        if varargin{c+1} >= size(varargin{1},1) % if there is enough to select from
+                            obj.genes = varargin{1}.genes(1:varargin{c+1},:);
+                            obj.fitnes = varargin{1}.fitnes(1:varargin{c+1});
+                        else    % selects many as possible
+                            obj.genes = varargin{1}.genes(1:size(varargin{1},1),:);
+                            obj.fitnes = varargin{1}.fitnes(1:size(varargin{1},1));
+                        end
                     case 'random'
                         rnd = rand(1,varargin{c+1}); % need the same numbers for getting the fitnes
                         obj.genes = varargin{1}.genes(ceil(rnd*size(varargin{1}.genes,1)),:);
