@@ -128,8 +128,8 @@ classdef ISLAND
         
         function[obj]=fitit(obj)    %   evaluates the fitnes for the island ??? does it work?
             
-                  if size(obj.fitnes,2) < size(obj.genes,2)
-                      obj.fitnes = [obj.fitnes ones(size(obj.genes,2) - size(obj.fitnes,2)*inf)];
+                  if size(obj.fitnes,2) < size(obj.genes,1)
+                      obj.fitnes = [obj.fitnes ones(1,size(obj.genes,1) - size(obj.fitnes,2))*inf];
                   end
             
 %                 if(obj.fitnes(c) == inf)
