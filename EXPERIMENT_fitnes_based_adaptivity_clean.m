@@ -8,13 +8,13 @@ generations = 5000;    %   how many generation will run
 
 initpopsize = 50;
 islandNum = 9;
-minIslandNum = 3;   % min pocet ostrovov
-resources = initpopsize/1.5 * islandNum;    % polovica poctu jedincov * pocet ostrovov
+minIslandNum = 5;   % min pocet ostrovov
+resources = initpopsize/2 * islandNum;    % polovica poctu jedincov * pocet ostrovov
 
-blobTreshold = initpopsize * 1.5;
-starving_tresh = ceil(generations*0.1);
+blobTreshold = round(initpopsize * 3);
+starving_tresh = ceil(generations*0.01);
 
-filter_window = 128;
+filter_window = 256;
 
 measure_num = 10;
 % ----------------------------------
@@ -26,13 +26,13 @@ for meas = 1:measure_num
     
     evolmap = eye(islandNum);
     wa = WORLD;
-    wa = wa.set('space','homo',-500,500,5,'initPopSize',initpopsize,'initSize',islandNum,'structure',wa.cmg('grid',3,3),'fitfunc','fiveholes2','vars',struct('generation',1,'convergence',0,'starvtime',0,'stagnation',0,'id',0,'pid',0));
+    wa = wa.set('space','homo',-500,500,20,'initPopSize',initpopsize,'initSize',islandNum,'structure',wa.cmg('grid',3,3),'fitfunc','eggholder','vars',struct('generation',1,'convergence',0,'starvtime',0,'stagnation',0,'id',0,'pid',0));
     wa = wa.genesis();
-%     wa.locvars = struct('island_size',[],'bestknown',[]);
+    wa.locvars = struct('bestknown',[]);
     for idset = 1:length(wa.islands)
         wa.islands(idset).vars.id = idset;
     end
-
+    idset = idset + 1;
     
     % -------------------------
     % gathered data:
@@ -41,9 +41,10 @@ for meas = 1:measure_num
     for g=1:generations
 %         tic;
 %         disp(['Adaptive PGA: ' num2str(g) ' run ' num2str(meas)])
-        islnum(g) = length(wa.islands);
+         islnum(g) = length(wa.islands);
 
           kill = [];
+%           disp([num2str(g) ': -----------'])
           for i = 1:length(wa.islands)
 
             % the island should not to be killed
@@ -51,7 +52,7 @@ for meas = 1:measure_num
             island = wa.islands(i);
             island = island.fitit();
             island = island.update();
-            
+%             disp([num2str(i) ' >> island size = ' num2str(size(island.genes,1))])
             
             
             %--------algorithm starts here
@@ -80,7 +81,7 @@ for meas = 1:measure_num
             %-------------------------
             
             if island.vars.generation <= 2
-                selRest = resources/islandNum * 2; 
+                selRest = resources/islandNum; 
 %                 if island.vars.convergence(g) == 0
 %                     island.vars.starvtime = island.vars.starvtime + 1;
 %                 end
@@ -88,7 +89,7 @@ for meas = 1:measure_num
                 selRest = ressup(i);
             end
             %-----------------------------
-            
+            island = island.fitit();
             elite = island.select('best',3);                % vyberie 3 najpelsich
             rest = island.select('random',round(selRest));              % zvisok doplni nahodnym vyberom
             rest = rest.toolbox26('crossov',2,1);           % funkcia crossov zo stareho toolboxu
@@ -112,7 +113,7 @@ for meas = 1:measure_num
                     wa.islands(length(wa.islands)+1) = newisland;                
                 end
 %                 ---------------------stagnation
-                 if island.vars.starvtime > starving_tresh %&& island.vars.stagnation ~= 1  % ostrov dlhsie stagnuje ako je dovolene
+                 if island.vars.starvtime > starving_tresh && island.vars.stagnation ~= 1  % ostrov dlhsie stagnuje ako je dovolene
 %                      disp([num2str(g) ': island number ' num2str(island.vars.id) ' is starving']);
                      for s = 1:length(wa.islands)       % hladam stagnovany ostrov na zlucenie                         
                          if wa.islands(s).vars.stagnation == 1  % som nasiel
@@ -120,6 +121,8 @@ for meas = 1:measure_num
                                  disp([num2str(g) ': island number ' num2str(island.vars.id) ' is joining island ' num2str(wa.islands(s).vars.id)]);
                                  evolmap(island.vars.id,wa.islands(s).vars.id) = 1;
                                  wa.islands(s) = wa.islands(s).join(island);
+                                 wa.islands(s).vars.stagnation = 0;
+                                 wa.islands(s).vars.starvtime = 0;
                                  kill(length(kill)+1) = i; % instruction to kill the island in the end
                                  break;
                              end; 
@@ -132,10 +135,11 @@ for meas = 1:measure_num
 %             end
             
             % -------
-            if islnum(g) < minIslandNum % ak pocet ostrovo je menej nez minimum
+%             if islnum(g) < minIslandNum % ak pocet ostrovo je menej nez minimum
+            if size(wa.islands,2) < minIslandNum
                 % vytvori novy ostrov ako dalsi
                 wa.islands(islnum(g)+1) = ISLAND;        
-                wa.islands(islnum(g)+1) = wa.islands(islnum(g)+1).set('space','homo',-500,500,5,'size',initpopsize,'fitfunc','fiveholes2','vars',struct('generation',1,'convergence',0,'starvtime',0,'stagnation',0,'id',0,'pid',0));
+                wa.islands(islnum(g)+1) = wa.islands(islnum(g)+1).set('space','homo',-500,500,20,'size',initpopsize,'fitfunc','eggholder','vars',struct('generation',1,'convergence',0,'starvtime',0,'stagnation',0,'id',0,'pid',0));
                 wa.islands(islnum(g)+1) = wa.islands(islnum(g)+1).seed();
                 wa.islands(islnum(g)+1).vars.id = idset;
                  disp([num2str(g) ': island number ' num2str(idset) ' is born']);
@@ -147,8 +151,15 @@ for meas = 1:measure_num
         end;
         
         wa = wa.update();
-        
-        bestrun(meas,g)=min(wa.statistics.min);
+        if g > 2
+            if min(wa.statistics.min) >  bestrun(meas,g-1)
+                bestrun(meas,g)=bestrun(meas,g-1);
+            else
+                bestrun(meas,g)=min(wa.statistics.min);
+            end
+        else
+            bestrun(meas,g)=min(wa.statistics.min);
+        end
     %   -----------normalization
         if g>=2
             nabs = zeros(size(wa.islands,2),1);
@@ -180,17 +191,18 @@ for meas = 1:measure_num
              end
          end
          %--------saving bestrun here
-%             if g==1
-                bestrun(g) = min(wa.statistics.min);
-%             else
-%                 bestrun(g) = 
-%             end
-         wa.locvars = islnum;
+%              if g==1
+%                 bestrun(g) = min(wa.statistics.min);
+%              else
+%                  bestrun(g) = 
+%              end
+%          wa.locvars = islnum;
 %          toc;
-    
+      wa.locvars.bestknown(g) = min(wa.statistics.min);
 %     break
-    adapted_worlds(meas) = wa;
     end
+    adapted_worlds(meas) = wa;
+    
     
    
 end
@@ -201,20 +213,19 @@ end
 % %     plot(bestrun)
 %     worlda = adapted_worlds(1);
 %     view(biograph(evolmap))
-%     beep
-%     pause(0.01)
-%     beep
-%     pause(0.01)
-%     beep
-%     break;
+     beep
+     pause(1)
+     beep
+     pause(1)
+     beep
+%      break;
 %----------------------------------good old classic
-
 for meas2 = 1:measure_num
 
     disp(['PGA run ' num2str(meas2) '/' num2str(measure_num)])
     
 w = WORLD;
-w = w.set('space','homo',-500,500,5,'initPopSize',initpopsize,'initSize',9,'structure',w.cmg('grid',3,3),'fitfunc','fiveholes2');
+w = w.set('space','homo',-500,500,20,'initPopSize',initpopsize,'initSize',9,'structure',w.cmg('grid',3,3),'fitfunc','eggholder');
 w = w.genesis();
 
 for g=1:generations
@@ -249,3 +260,8 @@ end
 retdir = cd('experiments')
 save('fitnes_based_islsize_classic_fiveholes.mat','classic_worlds')
 cd(retdir)
+beep
+     pause(1)
+     beep
+     pause(1)
+     beep

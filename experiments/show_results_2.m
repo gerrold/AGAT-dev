@@ -1,5 +1,5 @@
 % extract and sumarize adapteworlds
-clc
+% clc
 clear adataset
 clear cdataset
 ii = 1;
@@ -28,6 +28,6 @@ hold on
 plot(mean(cdatasett),'r')
 xlabel('generacie')
 ylabel('priemerny fitnes')
-title('eggholder 10 behov priemer')
+title('Eggholder 20, 10 behov priemer')
 legend('adaptivny','klassicky')
 hold off

@@ -2,15 +2,15 @@
 clc
 clear
 close all
-runz = 10;
-variables = 100;
-generation = 100;
+runz = 50;
+variables = 10;
+generation = 5000;
 
 for r=1:runz
 
 % je to jedno ci sa algoritmus naparametrizuje pri vyvoreni alebo pri seedovani  
 ostrov = ISLAND;
-ostrov = ostrov.set('space','homo',-500,500,variables,'fitfunc','schwef','popsize',30);
+ostrov = ostrov.set('space','homo',-500,500,variables,'fitfunc','eggholder','popsize',30);
 ostrov = ostrov.seed();
 
 % ostrov = ISLAND();
@@ -24,7 +24,7 @@ for i=1:generation
     
     mutmiera(i) = ostrov.statfilt('affinity','mean',3);
     
-    rest = rest.toolbox26('mutx',0.2,rest.space);   % to iste
+    rest = rest.toolbox26('mutx',mutmiera(i),rest.space);   % to iste
     rest = rest.toolbox26('muta',mutmiera(i),rest.space(2,:) .* 0.01, rest.space);    % aditivna mutacia o 1% zo space hodnoty
     ostrov = elite.join(rest);                      % spoji elitu so zviskom
 end
@@ -42,7 +42,7 @@ for rr=1:runz
 
 % je to jedno ci sa algoritmus naparametrizuje pri vyvoreni alebo pri seedovani  
 ostrov = ISLAND;
-ostrov = ostrov.set('space','homo',-500,500,variables,'fitfunc','schwef','popsize',30);
+ostrov = ostrov.set('space','homo',-500,500,variables,'fitfunc','eggholder','popsize',30);
 ostrov = ostrov.seed();
 
 % ostrov = ISLAND();
